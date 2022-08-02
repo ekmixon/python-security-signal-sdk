@@ -63,32 +63,28 @@ class SyncClient(object):
         properties["type"] = SignalType.METRIC
         return self.signal(signal_name, payload, **properties)
 
-    def signal(self, signal_name, payload, **properties):  # type: (str, Any, **Any) -> None
+    def signal(self, signal_name, payload, **properties):    # type: (str, Any, **Any) -> None
         """Record a signal to be sent."""
-        signal = dict(signal_name=signal_name, payload=payload)  # type: Signal
-        signal.update(properties)  # type: ignore
+        signal = dict(signal_name=signal_name, payload=payload) | properties
         return self._add_and_send(signal)
 
-    def trace(self, data, **properties):  # type: (Any, **Any) -> None
+    def trace(self, data, **properties):    # type: (Any, **Any) -> None
         """Record a trace to be sent."""
-        trace = dict(data=data)  # type: Trace
-        trace.update(properties)  # type: ignore
+        trace = dict(data=data) | properties
         return self._add_and_send(trace)
 
     def _add_and_send(self, data):  # type: (AnySignal) -> None
-        batch = self.accumulator.add(data)
-        if batch:
+        if batch := self.accumulator.add(data):
             self.executor.submit(self.sender.send_batch, batch)
 
-    def flush(self, soft=False, sync=False):  # type: (bool, bool) -> None
+    def flush(self, soft=False, sync=False):    # type: (bool, bool) -> None
         """Send all pending signals and traces.
 
         :param soft: (optional) Do not send the batch if it has not exceeded
         the interval time.
         :param sync: (optional) Wait for the batch to be transmitted.
         """
-        batch = self.accumulator.flush(soft=soft)
-        if batch:
+        if batch := self.accumulator.flush(soft=soft):
             if sync:
                 self.sender.send_batch(batch)
             else:

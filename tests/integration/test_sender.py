@@ -84,7 +84,7 @@ class SyncSenderTestCase(unittest.TestCase):
         port = random.randint(25252, 32323)
         self.fake_server = server.HTTPServer(
             ("localhost", port), FakeIngestionHandler)
-        self.fake_server_url = "http://localhost:{}/".format(port)
+        self.fake_server_url = f"http://localhost:{port}/"
         self.fake_server.serve_forever()
 
     def test_send(self):

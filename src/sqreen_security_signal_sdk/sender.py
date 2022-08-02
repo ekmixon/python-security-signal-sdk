@@ -133,7 +133,7 @@ class SyncSender(BaseSender):
         body = self.serialize_data(data)
         request_headers = dict(self.headers)
         request_headers["Content-Type"] = "application/json"
-        request_headers.update(headers)
+        request_headers |= headers
         url = self._url(endpoint)
         response = self.pool_manager.urlopen(
             "POST",

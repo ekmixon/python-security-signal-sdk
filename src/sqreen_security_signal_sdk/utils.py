@@ -37,10 +37,9 @@ def codecs_error_ascii_to_hex(exception):
         for character in invalid_part:
             # Python 2 strings
             if isinstance(character, str):
-                result.append(u"\\x{}".format(character.encode("hex")))
-            # Python 3 int
+                result.append(f'\\x{character.encode("hex")}')
             elif isinstance(character, int):
-                result.append(u"\\{}".format(hex(character)[1:]))
+                result.append(f"\\{hex(character)[1:]}")
             else:
                 raise exception
         result = ("".join(result), end)
@@ -63,7 +62,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             try:
                 return repr(obj)
             except Exception:
-                return "instance of type {}".format(repr(obj.__class__))
+                return f"instance of type {repr(obj.__class__)}"
 
 
 def reencode_payload(payload):
